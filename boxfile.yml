@@ -1,5 +1,9 @@
 run.config:
   engine: ruby
+  extra_packages:
+    - nginx
 
 web.api:
-  start: bundle exec ruby app.rb -e production
+  start:
+    nginx: nginx -c /app/config/nginx.conf
+    puma: bundle exec puma -C /app/config/puma.rb
