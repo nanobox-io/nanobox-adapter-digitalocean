@@ -1,0 +1,5 @@
+run.config:
+  engine: ruby
+
+web.api:
+  start: bundle exec ruby app.rb -e production
