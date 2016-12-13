@@ -10,9 +10,9 @@ Dir["./lib/autoload/*.rb"].each {|file| require file }
 set :bind, '0.0.0.0'
 
 before do
-  # if settings.production?
-  #   redirect request.url.sub('http', 'https') unless request.secure?
-  # end
+  if settings.production?
+    redirect request.url.sub('http', 'https') unless request.secure?
+  end
   request.body.rewind
   request_body = request.body.read
   @request_payload = JSON.parse(request_body) unless request_body.empty?
