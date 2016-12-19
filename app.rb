@@ -13,12 +13,14 @@ before do
   if settings.production?
     redirect request.url.sub('http', 'https') unless request.secure?
   end
+  content_type 'application/json'
   request.body.rewind
   request_body = request.body.read
   @request_payload = JSON.parse(request_body) unless request_body.empty?
 end
 
 get '/' do
+  content_type 'text/html'
   'DigitalOcean API Adapter for Nanobox. ' \
   'source: https://github.com/nanobox-io/nanobox-adapter-digitalocean'
 end
