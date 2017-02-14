@@ -39,7 +39,7 @@ class Client
 
   def server_order(attrs)
     attrs['ssh_keys']           = [attrs.delete('ssh_key').to_i]
-    attrs['image']              = 'ubuntu-14-04-x64'
+    attrs['image']              = 'ubuntu-16-04-x64'
     attrs['private_networking'] = true
 
     droplet = DropletKit::Droplet.new(attrs)

@@ -3,11 +3,15 @@ class Meta
     def to_json
       {
         id:                'do',
-        name:              'DigitalOcean(external)',
+        name:              'DigitalOcean',
         server_nick_name:  'Droplet',
         default_region:    'sfo2',
         default_plan:      'standard',
         default_size:      '512mb',
+        ssh_user:          'root',
+        internal_iface:    'eth1',
+        external_iface:    'eth0',
+        bootstrap_script:  'https://s3.amazonaws.com/tools.nanobox.io/bootstrap/ubuntu.sh',
         can_reboot:        true,
         can_rename:        true,
         credential_fields: [{ key: :access_token, label: 'Access Token' }],
