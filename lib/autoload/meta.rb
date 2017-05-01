@@ -12,6 +12,7 @@ class Meta
         internal_iface:    'eth1',
         external_iface:    'eth0',
         bootstrap_script:  'https://s3.amazonaws.com/tools.nanobox.io/bootstrap/ubuntu.sh',
+        ssh_key_method:    'reference',
         can_reboot:        true,
         can_rename:        true,
         credential_fields: [{ key: :access_token, label: 'Access Token' }],
