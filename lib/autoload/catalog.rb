@@ -37,14 +37,14 @@ class Catalog
       puts 'updating catalog...'
 
       f = File.open(SIZES_PATH, 'w')
-      f << client.sizes.all.to_json
+      f << dk_client.sizes.all.to_json
       f.close
       puts "updated sizes: #{SIZES_PATH}"
 
       f = File.open(REGIONS_PATH, 'w')
-      f << client.regions.all.to_json
+      f << dk_client.regions.all.to_json
       f.close
-      puts "updated regions: #{SIZES_PATH}"
+      puts "updated regions: #{REGIONS_PATH}"
 
       puts 'done.'
     end
@@ -69,8 +69,10 @@ class Catalog
       JSON.parse(contents) unless contents.empty?
     end
 
-    def client
-      @client ||= Client.new(ENV['ACCESS_TOKEN'])
+    def dk_client
+      @dk_client ||= begin
+        ::DropletKit::Client.new(access_token: ENV['ACCESS_TOKEN'])
+      end
     end
   end
 end
