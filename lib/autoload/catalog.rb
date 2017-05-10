@@ -2,9 +2,6 @@ require 'droplet_kit'
 
 class Catalog
 
-  SIZES_PATH   = 'lib/autoload/catalog/sizes.json'.freeze
-  REGIONS_PATH = 'lib/autoload/catalog/regions.json'.freeze
-
   class << self
     def to_json
       memo = regions.map do |region|
@@ -26,27 +23,17 @@ class Catalog
     end
 
     def sizes
-      parse_file(SIZES_PATH)
+      @sizes ||= begin
+        puts 'INFO: retrieving sizes'
+        JSON.parse(dk_client.sizes.all.to_json)
+      end
     end
 
     def regions
-      parse_file(REGIONS_PATH)
-    end
-
-    def update
-      puts 'updating catalog...'
-
-      f = File.open(SIZES_PATH, 'w')
-      f << dk_client.sizes.all.to_json
-      f.close
-      puts "updated sizes: #{SIZES_PATH}"
-
-      f = File.open(REGIONS_PATH, 'w')
-      f << dk_client.regions.all.to_json
-      f.close
-      puts "updated regions: #{REGIONS_PATH}"
-
-      puts 'done.'
+      @regions ||= begin
+        puts 'INFO: retrieving regions'
+        JSON.parse(dk_client.regions.all.to_json)
+      end
     end
 
     private
@@ -62,11 +49,6 @@ class Catalog
         dollars_per_hr: size_specs['price_hourly'],
         dollars_per_mo: size_specs['price_monthly']
       }
-    end
-
-    def parse_file(path)
-      contents = File.open(path, 'r').read
-      JSON.parse(contents) unless contents.empty?
     end
 
     def dk_client
