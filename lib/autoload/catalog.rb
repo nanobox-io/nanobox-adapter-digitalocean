@@ -7,7 +7,6 @@ class Catalog
       memo = regions.map do |region|
         standard_plans = { id: 'standard', name: 'Standard', specs: [] }
         high_mem_plans = { id: 'high-mem', name: 'High Memory', specs: [] }
-        next if region['sizes'].empty?
         region['sizes'].each do |size_slug|
           if size_slug.include?('m-')
             high_mem_plans[:specs] << catalog_size_specs(size_slug)
@@ -19,7 +18,7 @@ class Catalog
         memo[:plans] << standard_plans if standard_plans[:specs].any?
         memo[:plans] << high_mem_plans if high_mem_plans[:specs].any?
         memo.with_indifferent_access
-      end.compact
+      end
       memo.sort_by { |r| r[:id] }.to_json
     end
 
