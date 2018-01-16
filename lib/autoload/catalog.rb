@@ -7,16 +7,23 @@ class Catalog
       @to_json ||= begin
         memo = regions.map do |region|
           standard_plans = { id: 'standard', name: 'Standard', specs: [] }
+          optimized_plans = { id: 'optimized', name: 'Optimized', specs: [] }
           # old pricing avail unil July 1st, 2018
           legacy_plans = { id: 'legacy', name: 'Legacy', specs: [] }
           high_mem_plans = { id: 'high-mem', name: 'High Memory', specs: [] }
           region['sizes'].each do |size_slug|
             size_specs = find_size_specs(size_slug)
-            puts "WARNING: no size_specs for #{size_slug} in #{region['name']}"
-            next unless size_specs
+            unless size_specs
+              puts "WARNING: no size_specs for #{size_slug} in " \
+                   "#{region['name']}"
+              next
+            end
             if size_slug.include?('s-')
               standard_plans[:specs] << size_specs
               standard_plans[:specs].sort_by! { |r| r[:dollars_per_mo] }
+            elsif size_slug.include?('c-')
+              optimized_plans[:specs] << size_specs
+              optimized_plans[:specs].sort_by! { |r| r[:dollars_per_mo] }
             elsif size_slug.include?('m-')
               high_mem_plans[:specs] << size_specs
               high_mem_plans[:specs].sort_by! { |r| r[:dollars_per_mo] }
@@ -27,6 +34,7 @@ class Catalog
           end
           memo = { id: region['slug'], name: region['name'], plans: [] }
           memo[:plans] << standard_plans if standard_plans[:specs].any?
+          memo[:plans] << optimized_plans if optimized_plans[:specs].any?
           memo[:plans] << legacy_plans if legacy_plans[:specs].any?
           memo[:plans] << high_mem_plans if high_mem_plans[:specs].any?
           memo.with_indifferent_access
