@@ -7,7 +7,7 @@ class Meta
         server_nick_name:  'Droplet',
         default_region:    'sfo2',
         default_plan:      'standard',
-        default_size:      '512mb',
+        default_size:      's-1vcpu-1gb',
         ssh_user:          'root',
         internal_iface:    'eth1',
         external_iface:    'eth0',

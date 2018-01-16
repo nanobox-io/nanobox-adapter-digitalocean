@@ -4,22 +4,35 @@ class Catalog
 
   class << self
     def to_json
-      memo = regions.map do |region|
-        standard_plans = { id: 'standard', name: 'Standard', specs: [] }
-        high_mem_plans = { id: 'high-mem', name: 'High Memory', specs: [] }
-        region['sizes'].each do |size_slug|
-          if size_slug.include?('m-')
-            high_mem_plans[:specs] << catalog_size_specs(size_slug)
-          else
-            standard_plans[:specs] << catalog_size_specs(size_slug)
+      @to_json ||= begin
+        memo = regions.map do |region|
+          standard_plans = { id: 'standard', name: 'Standard', specs: [] }
+          # old pricing avail unil July 1st, 2018
+          legacy_plans = { id: 'legacy', name: 'Legacy', specs: [] }
+          high_mem_plans = { id: 'high-mem', name: 'High Memory', specs: [] }
+          region['sizes'].each do |size_slug|
+            size_specs = find_size_specs(size_slug)
+            puts "WARNING: no size_specs for #{size_slug} in #{region['name']}"
+            next unless size_specs
+            if size_slug.include?('s-')
+              standard_plans[:specs] << size_specs
+              standard_plans[:specs].sort_by! { |r| r[:dollars_per_mo] }
+            elsif size_slug.include?('m-')
+              high_mem_plans[:specs] << size_specs
+              high_mem_plans[:specs].sort_by! { |r| r[:dollars_per_mo] }
+            else
+              legacy_plans[:specs] << size_specs
+              legacy_plans[:specs].sort_by! { |r| r[:dollars_per_mo] }
+            end
           end
+          memo = { id: region['slug'], name: region['name'], plans: [] }
+          memo[:plans] << standard_plans if standard_plans[:specs].any?
+          memo[:plans] << legacy_plans if legacy_plans[:specs].any?
+          memo[:plans] << high_mem_plans if high_mem_plans[:specs].any?
+          memo.with_indifferent_access
         end
-        memo = { id: region['slug'], name: region['name'], plans: [] }
-        memo[:plans] << standard_plans if standard_plans[:specs].any?
-        memo[:plans] << high_mem_plans if high_mem_plans[:specs].any?
-        memo.with_indifferent_access
+        memo.sort_by { |r| r[:id] }.to_json
       end
-      memo.sort_by { |r| r[:id] }.to_json
     end
 
     def sizes
@@ -38,8 +51,9 @@ class Catalog
 
     private
 
-    def catalog_size_specs(size_slug)
+    def find_size_specs(size_slug)
       size_specs = sizes.find { |s| s['slug'] == size_slug }
+      return unless size_specs
       {
         id:             size_specs['slug'],
         ram:            size_specs['memory'],
