@@ -39,6 +39,11 @@ class Catalog
           memo[:plans] << high_mem_plans if high_mem_plans[:specs].any?
           memo.with_indifferent_access
         end
+        # manually add placeholer for ams2 until Nanobox dashboard handles
+        # dropped datacenters beter
+        unless memo.find { |region| region[:id] == 'ams2' }
+          memo << { id: 'ams2', name: 'Amsterdam 2', plans: [] }
+        end
         memo.sort_by { |r| r[:id] }.to_json
       end
     end
