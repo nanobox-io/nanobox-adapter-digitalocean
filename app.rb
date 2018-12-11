@@ -5,7 +5,7 @@ if development?
   require 'pry'
 end
 
-Dir["./lib/autoload/*.rb"].each {|file| require file }
+Dir["./lib/*.rb"].each {|file| require file }
 
 set :bind, '0.0.0.0'
 
@@ -66,6 +66,7 @@ get '/servers/:id' do
 end
 
 post '/servers' do
+  puts "here!"
   status 201
   server_id = client.server_order(@request_payload)
   { id: server_id.to_s }.to_json

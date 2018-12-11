@@ -16,6 +16,10 @@ class Meta
         can_reboot:        true,
         can_rename:        true,
         credential_fields: [{ key: :access_token, label: 'Access Token' }],
+        config_fields:     [
+          { key: :project_id, label: 'Project ID' },
+          { key: :tags, label: 'Tags' }
+        ],
         instructions:      instructions
       }.to_json
     end

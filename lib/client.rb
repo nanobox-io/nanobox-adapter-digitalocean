@@ -41,9 +41,38 @@ class Client
     attrs['ssh_keys']           = [attrs.delete('ssh_key').to_i]
     attrs['image']              = 'ubuntu-16-04-x64'
     attrs['private_networking'] = true
-
-    droplet = DropletKit::Droplet.new(attrs)
-    dk_client.droplets.create(droplet).id
+    
+    # meta config
+    config = attrs.delete('config') || {}
+    
+    template = DropletKit::Droplet.new(attrs)
+    droplet = dk_client.droplets.create(template)
+    
+    # assign to project
+    if config['project_id']
+      dk_client
+        .projects
+        .assign_resources([droplet], id: config['project_id'])
+    end
+    
+    # attach tags
+    if config['tags']
+      config['tags'].split(",").each do |name|
+        # ensure the tag exists
+        dk_client.tags.create(DropletKit::Tag.new(name: name))
+        
+        # tag the resource
+        dk_client.tags.tag_resources(
+          name: name, 
+          resources: [
+            { resource_id: droplet.id, resource_type: 'droplet' }
+          ]
+        )
+      end
+    end
+    
+    # return the server id
+    droplet.id
   end
 
   def server_delete(id)

@@ -11,4 +11,5 @@ services:
       - "3000:4567"
     env_file:
       - '.docker-dev/.env'
+      - '.docker-dev/.env.secret'
     command: rerun --background app.rb
