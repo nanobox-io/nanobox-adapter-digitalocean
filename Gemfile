@@ -9,4 +9,5 @@ gem 'droplet_kit', '~> 2.1.0' # digital ocean official client
 group :development do
   gem 'pry'
   gem 'rake'
+  gem 'rerun'
 end
