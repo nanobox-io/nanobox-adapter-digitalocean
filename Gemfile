@@ -4,7 +4,7 @@ gem 'sinatra', '~> 1.4.7'
 gem 'json', '~> 1.8.3'
 gem 'puma', '~> 3.0'
 
-gem 'droplet_kit' # digital ocean official client
+gem 'droplet_kit', '~> 2.1.0' # digital ocean official client
 
 group :development do
   gem 'pry'

@@ -1,0 +1,26 @@
+#!/bin/bash
+
+set -e
+set -o pipefail
+
+compose() {
+  docker-compose \
+    -f .docker-dev/docker-compose.yml \
+    --project-directory . \
+    "$@"
+}
+
+case $1 in
+  up)
+    compose up
+    ;;
+  console)
+    compose run web bash
+    ;;
+  down)
+    compose down
+    ;;
+  build)
+    compose build
+    ;;
+esac
