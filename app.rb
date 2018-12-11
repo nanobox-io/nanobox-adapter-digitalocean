@@ -66,7 +66,6 @@ get '/servers/:id' do
 end
 
 post '/servers' do
-  puts "here!"
   status 201
   server_id = client.server_order(@request_payload)
   { id: server_id.to_s }.to_json
